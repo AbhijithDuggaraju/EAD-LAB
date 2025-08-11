@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Login Form</title>
+<style>
+  body {
+    background: #1e1e2f;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    height: 100vh;
+    justify-content: center;
+    align-items: center;
+    margin: 0;
+  }
+
+  .login-container {
+    background: #2b2b44;
+    padding: 30px 40px;
+    border-radius: 12px;
+    width: 100%;
+    max-width: 380px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+
+  h2 {
+    margin-bottom: 25px;
+    color: #ffcc00;
+    text-align: center;
+    letter-spacing: 2px;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  input {
+    padding: 12px 15px;
+    border-radius: 8px;
+    border: none;
+    margin-bottom: 18px;
+    font-size: 16px;
+    outline: none;
+    background: #3a3a5e;
+    color: #eee;
+    transition: box-shadow 0.3s ease;
+  }
+
+  input:focus {
+    box-shadow: 0 0 8px #ffcc00;
+  }
+
+  .password-wrapper {
+    position: relative;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    user-select: none;
+    color: #ffcc00;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: -12px;
+    margin-bottom: 12px;
+  }
+
+  button {
+    background: #ffcc00;
+    border: none;
+    padding: 14px;
+    font-size: 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #2b2b44;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background: #e6b800;
+  }
+</style>
+</head>
+<body>
+
+<div class="login-container">
+  <h2>Login</h2>
+  <form id="loginForm" novalidate>
+    <label for="username">Username</label>
+    <input type="text" id="username" name="username" placeholder="Enter username" required />
+    <div class="error-message" id="usernameError"></div>
+
+    <label for="password">Password</label>
+    <div class="password-wrapper">
+      <input type="password" id="password" name="password" placeholder="Enter password" required />
+      <span class="toggle-password" id="togglePassword">Show</span>
+    </div>
+    <div class="error-message" id="passwordError"></div>
+
+    <button type="submit">Login</button>
+  </form>
+</div>
+
+<script>
+  const loginForm = document.getElementById('loginForm');
+  const username = document.getElementById('username');
+  const password = document.getElementById('password');
+  const togglePassword = document.getElementById('togglePassword');
+
+  togglePassword.addEventListener('click', () => {
+    if (password.type === 'password') {
+      password.type = 'text';
+      togglePassword.textContent = 'Hide';
+    } else {
+      password.type = 'password';
+      togglePassword.textContent = 'Show';
+    }
+  });
+
+  function showError(input, message) {
+    const errorDiv = document.getElementById(input.id + 'Error');
+    errorDiv.textContent = message;
+    input.classList.add('invalid');
+  }
+
+  function clearError(input) {
+    const errorDiv = document.getElementById(input.id + 'Error');
+    errorDiv.textContent = '';
+    input.classList.remove('invalid');
+  }
+
+  loginForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    let valid = true;
+
+    if (username.value.trim() === '') {
+      showError(username, 'Username is required');
+      valid = false;
+    } else {
+      clearError(username);
+    }
+
+    if (password.value === '') {
+      showError(password, 'Password is required');
+      valid = false;
+    } else {
+      clearError(password);
+    }
+
+    if (valid) {
+      // Normally, here you’d send data to backend for auth.
+      alert(`Welcome, ${username.value}!`);
+      loginForm.reset();
+      togglePassword.textContent = 'Show';
+      password.type = 'password';
+    }
+  });
+</script>
+
+</body>
+</html>

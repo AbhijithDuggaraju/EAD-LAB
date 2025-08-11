@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Modern Login Form</title>
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+    background: #1e1e2f;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #eee;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .container {
+    background: #2b2b44;
+    padding: 30px 40px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 420px;
+  }
+
+  h2 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: #ffcc00;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+
+  label {
+    margin-bottom: 6px;
+    font-weight: 600;
+  }
+
+  input, select {
+    padding: 12px 15px;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    font-size: 16px;
+    outline: none;
+    transition: box-shadow 0.3s ease;
+    background: #3a3a5e;
+    color: #eee;
+  }
+
+  input:focus, select:focus {
+    box-shadow: 0 0 8px #ffcc00;
+  }
+
+  .password-wrapper {
+    position: relative;
+  }
+
+  .toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    user-select: none;
+    color: #ffcc00;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 1px;
+  }
+
+  .strength-meter {
+    height: 8px;
+    border-radius: 5px;
+    background: #444466;
+    margin-top: -14px;
+    margin-bottom: 18px;
+    overflow: hidden;
+  }
+
+  .strength-meter > div {
+    height: 100%;
+    width: 0%;
+    background: red;
+    transition: width 0.3s ease;
+  }
+
+  .strength-weak {
+    background: #ff4d4d;
+  }
+  .strength-medium {
+    background: #ffb84d;
+  }
+  .strength-strong {
+    background: #4caf50;
+  }
+
+  .error-message {
+    color: #ff4d4d;
+    font-size: 14px;
+    margin-top: -12px;
+    margin-bottom: 12px;
+  }
+
+  button {
+    background: #ffcc00;
+    border: none;
+    padding: 14px;
+    font-size: 18px;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    color: #2b2b44;
+    transition: background 0.3s ease;
+  }
+
+  button:hover {
+    background: #e6b800;
+  }
+
+  @media (max-width: 480px) {
+    .container {
+      padding: 20px 25px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Create Account</h2>
+  <form id="registerForm" novalidate>
+    <label for="fullName">Full Name</label>
+    <input type="text" id="fullName" name="fullName" placeholder="Your full name" required />
+    <div class="error-message" id="fullNameError"></div>
+
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" placeholder="example@email.com" required />
+    <div class="error-message" id="emailError"></div>
+
+    <label for="phone">Phone Number</label>
+    <input type="tel" id="phone" name="phone" placeholder="+1 234 567 8901" pattern="^\+?[0-9\s\-]{7,15}$" required />
+    <div class="error-message" id="phoneError"></div>
+
+    <label for="dob">Date of Birth</label>
+    <input type="date" id="dob" name="dob" max="" required />
+    <div class="error-message" id="dobError"></div>
+
+    <label for="password">Password</label>
+    <div class="password-wrapper">
+      <input type="password" id="password" name="password" placeholder="Enter password" required />
+      <span class="toggle-password" id="togglePassword">Show</span>
+    </div>
+    <div class="strength-meter" aria-hidden="true">
+      <div id="strengthBar"></div>
+    </div>
+    <div class="error-message" id="passwordError"></div>
+
+    <label for="confirmPassword">Confirm Password</label>
+    <input type="password" id="confirmPassword" name="confirmPassword" placeholder="Confirm password" required />
+    <div class="error-message" id="confirmPasswordError"></div>
+
+    <button type="submit">Register</button>
+  </form>
+</div>
+
+<script>
+  const registerForm = document.getElementById('registerForm');
+  const fullName = document.getElementById('fullName');
+  const email = document.getElementById('email');
+  const phone = document.getElementById('phone');
+  const dob = document.getElementById('dob');
+  const password = document.getElementById('password');
+  const confirmPassword = document.getElementById('confirmPassword');
+  const togglePassword = document.getElementById('togglePassword');
+  const strengthBar = document.getElementById('strengthBar');
+
+  // Set max date for DOB to today
+  dob.max = new Date().toISOString().split("T")[0];
+
+  // Show/hide password
+  togglePassword.addEventListener('click', () => {
+    if (password.type === 'password') {
+      password.type = 'text';
+      togglePassword.textContent = 'Hide';
+    } else {
+      password.type = 'password';
+      togglePassword.textContent = 'Show';
+    }
+  });
+
+  // Password strength checker
+  password.addEventListener('input', () => {
+    const val = password.value;
+    let strength = 0;
+
+    if(val.length >= 8) strength++;
+    if(/[A-Z]/.test(val)) strength++;
+    if(/[0-9]/.test(val)) strength++;
+    if(/[^A-Za-z0-9]/.test(val)) strength++;
+
+    strengthBar.style.width = (strength * 25) + '%';
+
+    strengthBar.classList.remove('strength-weak', 'strength-medium', 'strength-strong');
+    if(strength <= 1) strengthBar.classList.add('strength-weak');
+    else if(strength === 2 || strength === 3) strengthBar.classList.add('strength-medium');
+    else if(strength === 4) strengthBar.classList.add('strength-strong');
+  });
+
+  // Validation helpers
+  function showError(input, message) {
+    const errorDiv = document.getElementById(input.id + 'Error');
+    errorDiv.textContent = message;
+    input.classList.add('invalid');
+  }
+
+  function clearError(input) {
+    const errorDiv = document.getElementById(input.id + 'Error');
+    errorDiv.textContent = '';
+    input.classList.remove('invalid');
+  }
+
+  function validateEmail(email) {
+    // Simple email regex
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(email);
+  }
+
+  function validatePhone(phone) {
+    const re = /^\+?[0-9\s\-]{7,15}$/;
+    return re.test(phone);
+  }
+
+  function validateForm() {
+    let valid = true;
+
+    // Full Name validation
+    if(fullName.value.trim().length < 3) {
+      showError(fullName, "Please enter your full name (at least 3 characters).");
+      valid = false;
+    } else {
+      clearError(fullName);
+    }
+
+    // Email validation
+    if(!validateEmail(email.value)) {
+      showError(email, "Please enter a valid email.");
+      valid = false;
+    } else {
+      clearError(email);
+    }
+
+    // Phone validation
+    if(!validatePhone(phone.value)) {
+      showError(phone, "Please enter a valid phone number.");
+      valid = false;
+    } else {
+      clearError(phone);
+    }
+
+    // DOB validation - ensure user is at least 13 years old
+    const birthDate = new Date(dob.value);
+    const today = new Date();
+    const ageDiff = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    const dayDiff = today.getDate() - birthDate.getDate();
+    let age = ageDiff;
+    if(monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
+      age--;
+    }
+    if(!dob.value) {
+      showError(dob, "Please enter your date of birth.");
+      valid = false;
+    } else if(age < 13) {
+      showError(dob, "You must be at least 13 years old.");
+      valid = false;
+    } else {
+      clearError(dob);
+    }
+
+    // Password validation
+    const pwd = password.value;
+    if(pwd.length < 8) {
+      showError(password, "Password must be at least 8 characters.");
+      valid = false;
+    } else if(!/[A-Z]/.test(pwd)) {
+      showError(password, "Password must contain at least one uppercase letter.");
+      valid = false;
+    } else if(!/[0-9]/.test(pwd)) {
+      showError(password, "Password must contain at least one number.");
+      valid = false;
+    } else {
+      clearError(password);
+    }
+
+    // Confirm password validation
+    if(confirmPassword.value !== pwd) {
+      showError(confirmPassword, "Passwords do not match.");
+      valid = false;
+    } else {
+      clearError(confirmPassword);
+    }
+
+    return valid;
+  }
+
+  registerForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    if(validateForm()) {
+      alert('Registration successful!');
+      registerForm.reset();
+      strengthBar.style.width = '0%';
+      strengthBar.classList.remove('strength-weak', 'strength-medium', 'strength-strong');
+    }
+  });
+</script>
+
+</body>
+</html>
