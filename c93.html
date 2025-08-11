@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Centered Chessboard with Pieces</title>
+  <style>
+    /* Center page with flexbox */
+    body, html {
+      height: 100%;
+      margin: 0;
+      display: flex;
+      justify-content: center; /* horizontal */
+      align-items: center;     /* vertical */
+      background-color: #031192;
+    }
+    .chessboard {
+      display: grid;
+      grid-template-columns: repeat(8, 60px);
+      grid-template-rows: repeat(8, 60px);
+      border: 3px solid #333;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+      background-color: #333;
+    }
+    .square {
+      width: 60px;
+      height: 60px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 40px;
+      cursor: default;
+      user-select: none;
+    }
+    .black {
+      background-color: #769656;
+    }
+    .white {
+      background-color: #eeeed2;
+    }
+  </style>
+</head>
+<body>
+  <div class="chessboard"></div>
+
+  <script>
+    const board = document.querySelector('.chessboard');
+
+   
+    const startingPosition = [
+      ['r','n','b','q','k','b','n','r'], // black back row
+      ['p','p','p','p','p','p','p','p'], // black pawns
+      ['','','','','','','',''],          // empty rows
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['P','P','P','P','P','P','P','P'], // white pawns
+      ['R','N','B','Q','K','B','N','R'], // white back row
+    ];
+
+    // Map piece letters to Unicode chess pieces
+    const pieceUnicode = {
+      'P': '♙',
+      'R': '♖',
+      'N': '♘',
+      'B': '♗',
+      'Q': '♕',
+      'K': '♔',
+      'p': '♟',
+      'r': '♜',
+      'n': '♞',
+      'b': '♝',
+      'q': '♛',
+      'k': '♚',
+    };
+
+    for(let row = 0; row < 8; row++) {
+      for(let col = 0; col < 8; col++) {
+        const square = document.createElement('div');
+        square.classList.add('square');
+
+        // classic chessboard pattern: black if (row+col) is odd
+        if ((row + col) % 2 === 1) {
+          square.classList.add('black');
+        } else {
+          square.classList.add('white');
+        }
+
+        // Add piece if present
+        const piece = startingPosition[row][col];
+        if (piece) {
+          square.textContent = pieceUnicode[piece];
+        }
+
+        board.appendChild(square);
+      }
+    }
+  </script>
+</body>
+</html>
+
+
